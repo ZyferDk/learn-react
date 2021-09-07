@@ -1,32 +1,17 @@
 `use strict`
 
-function formatName(user) {
-    return user.firstName + ' ' + user.lastName;
+function tick() {
+    const element = (
+        <div>
+            <h1>Hello, React</h1>
+            <h2>It is, {new Date().toLocaleTimeString()}</h2>
+        </div>
+    )
+
+    ReactDOM.render(
+        element,
+        document.getElementById('root')
+    );
 }
 
-const user = {
-    firstName: `aji`,
-    lastName: 'dk'
-}
-
-
-function getGreeting(user) {
-    if (user) {
-        return (
-            <div>
-                <h1 className="greeting">Hello, {formatName(user)}</h1>
-            </div>
-        );
-    }
-    return <h1>Hello, Stranger.</h1>;
-}
-
-
-const element = (
-    <div tabIndex="0">{getGreeting(user)}</div>
-)
-
-ReactDOM.render(
-    element,
-    document.getElementById('root')
-);
+setInterval(tick,1000)
