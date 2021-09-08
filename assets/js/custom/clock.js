@@ -12,7 +12,7 @@ class Clock extends React.Component {
   }
 
   componentDidMount() {
-    this.timerID = setInterval(() => this.tick(), 1000);
+    // this.timerID = setInterval(() => this.tick(), 1000);
   }
 
   componentWillUnmount() {
@@ -36,14 +36,36 @@ class Clock extends React.Component {
   }
 }
 
+class Button extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { isToggleOn: true };
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    this.setState((item) => ({
+      isToggleOn: !item.isToggleOn,
+    }));
+  }
+
+  render() {
+    console.log(this.state.isToggleOn);
+    return (
+      <div>
+        <button type="submit" onClick={this.handleClick}>
+          {this.state.isToggleOn ? `ON` : `OFF`}
+        </button>
+      </div>
+    );
+  }
+}
+
 function App() {
   return (
     <div>
-      <Clock title="jam" description="lorem ipsum" />
-      {/* <Clock />
       <Clock />
-      <Clock />
-      <Clock /> */}
+      <Button />
     </div>
   );
 }
