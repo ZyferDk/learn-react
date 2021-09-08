@@ -1,7 +1,7 @@
 `use strict`;
 
 function FormatDate(props) {
-    console.log(props);
+  console.log(props);
   return <h2>It is, {props.date.toLocaleTimeString()}</h2>;
 }
 
@@ -28,8 +28,9 @@ class Clock extends React.Component {
   render() {
     return (
       <div>
-        <h1>Hello, World</h1>
+        <h1>{this.props.title}</h1>
         <FormatDate date={this.state.date} />
+        <p>{this.props.description}</p>
       </div>
     );
   }
@@ -38,11 +39,11 @@ class Clock extends React.Component {
 function App() {
   return (
     <div>
-      <Clock date="mantap" />
+      <Clock title="jam" description="lorem ipsum" />
+      {/* <Clock />
       <Clock />
       <Clock />
-      <Clock />
-      <Clock />
+      <Clock /> */}
     </div>
   );
 }
