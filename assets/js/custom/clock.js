@@ -1,71 +1,106 @@
 `use strict`;
-
-function FormatDate(props) {
-  console.log(props);
-  return <h2>It is, {props.date.toLocaleTimeString()}</h2>;
-}
-
-class Clock extends React.Component {
+class LoginControl extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { date: new Date() };
+    this.state = { isLoginIn: false, showWarning: false };
+    this.handleLoginClick = this.handleLoginClick.bind(this);
+    this.handleLogoutClick = this.handleLogoutClick.bind(this);
   }
 
-  componentDidMount() {
-    // this.timerID = setInterval(() => this.tick(), 1000);
+  handleLoginClick() {
+    this.setState({ isLoginIn: true });
   }
 
-  componentWillUnmount() {
-    clearInterval(this.timerID);
-  }
-
-  tick() {
-    this.setState({
-      date: new Date(),
-    });
+  handleLogoutClick() {
+    this.setState({ isLoginIn: false });
   }
 
   render() {
+    const isLoginIn = this.state.isLoginIn;
+    let button;
+
+    // if (isLoginIn) {
+    //   button = <button onClick={this.handleLogoutClick}>Logout</button>;
+    // } else {
+    //   button = <button onClick={this.handleLoginClick}>Login</button>;
+    // }
+    {
+      isLoginIn
+        ? (button = <button onClick={this.handleLogoutClick}>Logout</button>)
+        : (button = (
+            <div>
+              <WarningBanner warn={this.state.showWarning} />
+              <button onClick={this.handleLoginClick}>Login</button>
+            </div>
+          ));
+    }
+
     return (
       <div>
-        <h1>{this.props.title}</h1>
-        <FormatDate date={this.state.date} />
-        <p>{this.props.description}</p>
+        <Greeting isLoginIn={isLoginIn} />
+
+        {button}
       </div>
     );
   }
 }
 
-class Button extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { isToggleOn: true };
-    this.handleClick = this.handleClick.bind(this);
+function WarningBanner(props) {
+  if (props.warn) {
+    return null;
   }
 
-  handleClick() {
-    this.setState((item) => ({
-      isToggleOn: !item.isToggleOn,
-    }));
-  }
+  return (
+    <div className="warning">
+      Warning!
+      <GuestGreeting />
+    </div>
+  );
+}
 
-  render() {
-    console.log(this.state.isToggleOn);
+function UserGreeting(props) {
+  return <h1>Welcome brother</h1>;
+}
+
+function GuestGreeting(props) {
+  return <h1>Please sign in</h1>;
+}
+
+function Greeting(props) {
+  const isLoginIn = props.isLoginIn;
+  if (isLoginIn) {
     return (
       <div>
-        <button type="submit" onClick={this.handleClick}>
-          {this.state.isToggleOn ? `ON` : `OFF`}
-        </button>
+        <UserGreeting />
+        <MailBox unreadMessages={message} />
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <GuestGreeting />
       </div>
     );
   }
 }
+
+function MailBox(props) {
+  const unreadMessages = props.unreadMessages;
+  return (
+    <div>
+      {unreadMessages.length > 0 && (
+        <h2>You Have {unreadMessages.length} unread Messages</h2>
+      )}
+    </div>
+  );
+}
+
+const message = ["react", "re:react", "re:re:react"];
 
 function App() {
   return (
     <div>
-      <Clock />
-      <Button />
+      <LoginControl />
     </div>
   );
 }
