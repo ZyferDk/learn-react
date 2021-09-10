@@ -1,60 +1,83 @@
 `use strict`;
+class Form extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: "",
+      address: "",
+      area: "",
+      pilih: "",
+    };
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleName = this.handleName.bind(this);
+    this.handleAddress = this.handleAddress.bind(this);
+    this.handleArea = this.handleArea.bind(this);
+    this.handleSelect = this.handleSelect.bind(this);
+  }
 
-function ListItem(props) {
-  return <li>{props.value}</li>;
+  handleSubmit(e) {
+    e.preventDefault();
+    alert(
+      `A name was submitted ${this.state.value} and ${this.state.address} ${this.state.area} ${this.state.pilih}`
+    );
+  }
+
+  handleName(e) {
+    e.preventDefault();
+    this.setState({ value: e.target.value });
+  }
+
+  handleAddress(e) {
+    e.preventDefault();
+    this.setState({ address: e.target.value });
+  }
+
+  handleArea(e) {
+    this.setState({ area: e.target.value });
+  }
+  handleSelect(e) {
+    this.setState({ pilih: e.target.value });
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <label>Name : </label>
+        <input
+          type="text"
+          value={this.state.value}
+          onChange={this.handleName}
+        />
+        <br />
+        <label>Address : </label>
+        <input
+          type="text"
+          value={this.state.address}
+          onChange={this.handleAddress}
+        />
+        <br />
+        <label>Ara : </label>
+        <textarea value={this.state.area} onChange={this.handleArea} />
+        <br />
+        <label>
+          Pick your favorite flavor:
+          <select value={this.state.pilih} onChange={this.handleSelect}>
+            <option value="grapefruit">Grapefruit</option>
+            <option value="lime">Lime</option>
+            <option value="coconut">Coconut</option>
+            <option value="mango">Mango</option>
+          </select>
+        </label>
+        <input type="submit" value="submit" />
+      </form>
+    );
+  }
 }
-
-function NumberList(props) {
-  const numbers = props.numbers;
-  let listItems = numbers.map((number, index) => (
-    <ListItem key={index} value={number} />
-  ));
-  return (
-    <div>
-      <ul>{listItems}</ul>
-    </div>
-  );
-}
-
-function Post(props) {
-  return (
-    <div >
-      <h3>{props.content.title}</h3>
-      <p>{props.content.content}</p>
-    </div>
-  );
-}
-
-function Blog(props) {
-  const sidebar = (
-    <ul>
-      {props.posts.map((post, index) => (
-        <li key={index}>{post.title}</li>
-      ))}
-    </ul>
-  );
-  const content = props.posts.map((post, index) => (
-    <Post key={index} content={post} />
-  ));
-  return (
-    <div>
-      {sidebar} <hr /> {content}
-    </div>
-  );
-}
-
-const numbers = [4, 5, 3, 2, 6, 3, 2, 4, 1, 2, 5, 3, 2];
-// const numbers = [1, 2, 3, 4, 5];
-const posts = [
-  { id: 1, title: "Hello World", content: "Welcome to learning React!" },
-  { id: 2, title: "Installation", content: "You can install React from npm." },
-];
 
 function App() {
   return (
     <div>
-      <NumberList numbers={numbers} />
-      <Blog posts={posts} />
+      <Form />
     </div>
   );
 }
