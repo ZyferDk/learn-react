@@ -3,6 +3,7 @@
 const scaleNames = {
   c: `celsius`,
   f: `fahrenheit`,
+  k: `kelvin`,
 };
 
 function tryConvert(temperature, convert) {
@@ -23,6 +24,10 @@ function toCelsius(fahrenheit) {
 
 function toFahrenheit(celsius) {
   return (celsius * 9) / 5 + 32;
+}
+
+function toKelvin(celsius) {
+  return celsius + 273.15;
 }
 
 function BoilingVerdict(props) {
@@ -60,6 +65,7 @@ class Calculator extends React.Component {
     this.state = { temperature: 0, scale: "c" };
     this.handleCelsiusChange = this.handleCelsiusChange.bind(this);
     this.handleFahrenheitChange = this.handleFahrenheitChange.bind(this);
+    this.handleKelvinChange = this.handleKelvinChange.bind(this);
   }
 
   handleCelsiusChange(temperature) {
@@ -70,13 +76,26 @@ class Calculator extends React.Component {
     this.setState({ scale: "f", temperature });
   }
 
+  handleKelvinChange(temperature) {
+    this.setState({ scale: "k", temperature });
+  }
+
   render() {
     const scale = this.state.scale;
+    console.log(scale);
     const temperature = this.state.temperature;
     const celsius =
-      scale === "f" ? tryConvert(temperature, toCelsius) : temperature;
+      scale === "f" || scale === "k"
+        ? tryConvert(temperature, toCelsius)
+        : temperature;
     const fahrenheit =
-      scale === "c" ? tryConvert(temperature, toFahrenheit) : temperature;
+      scale === "c" || scale === "k"
+        ? tryConvert(temperature, toFahrenheit)
+        : temperature;
+    const kelvin =
+      scale === "c" || scale === "f"
+        ? tryConvert(temperature, toKelvin)
+        : temperature;
     return (
       <div>
         <TemperatureInput
@@ -88,6 +107,11 @@ class Calculator extends React.Component {
           scale="f"
           temperature={fahrenheit}
           onTemperatureChange={this.handleFahrenheitChange}
+        />
+        <TemperatureInput
+          scale="k"
+          temperature={kelvin}
+          onTemperatureChange={this.handleKelvinChange}
         />
         <BoilingVerdict celsius={parseFloat(temperature)} />
       </div>
