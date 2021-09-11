@@ -1,130 +1,219 @@
 `use strict`;
 
-const scaleNames = {
-  c: `celsius`,
-  f: `fahrenheit`,
-  k: `kelvin`,
-};
+const products = [
+  {
+    category: "Sporting Goods",
+    price: "$49.99",
+    stocked: true,
+    name: "Football",
+  },
+  {
+    category: "Sporting Goods",
+    price: "$9.99",
+    stocked: true,
+    name: "Baseball",
+  },
+  {
+    category: "Sporting Goods",
+    price: "$29.99",
+    stocked: false,
+    name: "Basketball",
+  },
+  {
+    category: "Electronics",
+    price: "$99.99",
+    stocked: true,
+    name: "iPod Touch",
+  },
+  {
+    category: "Electronics",
+    price: "$399.99",
+    stocked: false,
+    name: "iPhone 5",
+  },
+  { category: "Electronics", price: "$199.99", stocked: true, name: "Nexus 7" },
+];
 
-function tryConvert(temperature, convert) {
-  const input = parseFloat(temperature);
-
-  if (Number.isNaN(input)) {
-    return "";
-  }
-
-  const output = convert(input);
-  const rounded = Math.round(output * 1000) / 1000;
-  return rounded.toString();
-}
-
-function toCelsius(fahrenheit) {
-  return ((fahrenheit - 32) * 5) / 9;
-}
-
-function toFahrenheit(celsius) {
-  return (celsius * 9) / 5 + 32;
-}
-
-function toKelvin(celsius) {
-  return celsius + 273.15;
-}
-
-function BoilingVerdict(props) {
-  if (props.celsius >= 100) {
-    return <p>The water would boil</p>;
-  }
-  return <p>The water would not boil</p>;
-}
-
-class TemperatureInput extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handleChange = this.handleChange.bind(this);
-  }
-
-  handleChange(e) {
-    this.props.onTemperatureChange(e.target.value);
-  }
-
+class ProductRow extends React.Component {
   render() {
-    const temperature = this.props.temperature;
-    const scale = this.props.scale;
+    const product = this.props.product;
+    const name = product.stocked ? (
+      product.name
+    ) : (
+      <span style={{ color: "red" }}>{product.name}</span>
+    );
+
     return (
-      <fieldset>
-        <legend>Enter temperature in {scaleNames[scale]}</legend>
-        <input value={temperature} onChange={this.handleChange} />
-      </fieldset>
+      <tr>
+        <td>{name}</td>
+        <td>{product.price}</td>
+      </tr>
     );
   }
 }
 
-class Calculator extends React.Component {
+class ProductCategoryRow extends React.Component {
+  render() {
+    const category = this.props.category;
+    return (
+      <tr>
+        <th colSpan="2">{category}</th>
+      </tr>
+    );
+  }
+}
+
+class ProductTable extends React.Component {
+  render() {
+    const filterText = this.props.filterText;
+    const inStockOnly = this.props.inStockOnly;
+    const rows = [];
+    let lastCategory = null;
+
+    this.props.products.forEach((product) => {
+      const productName = product.name.toLowerCase();
+      if (
+        productName.indexOf(filterText) === -1 ||
+        (inStockOnly && !product.stocked)
+      ) {
+        return;
+      }
+
+      product.category !== lastCategory
+        ? rows.push(
+            <ProductCategoryRow
+              category={product.category}
+              key={product.category}
+            />
+          )
+        : null;
+      rows.push(<ProductRow product={product} key={product.name} />);
+      lastCategory = product.category;
+    });
+    return (
+      <div>
+        <table border="1">
+          <thead>
+            <tr>
+              <th>name</th>
+              <th>price</th>
+            </tr>
+          </thead>
+          <tbody>{rows}</tbody>
+        </table>
+      </div>
+    );
+  }
+}
+// class SearchBar extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.handleInputChange = this.handleInputChange.bind(this);
+//     this.handleInStockChange = this.handleInStockChange.bind(this);
+//   }
+
+//   handleInputChange(e) {
+//     this.props.handleInputChange(e.target.value);
+//   }
+
+//   handleInStockChange(e) {
+//     this.props.onInStockChange(e.target.checked);
+//   }
+
+//   render() {
+//     const filterText = this.props.filterText;
+//     const inStockOnly = this.props.inStockOnly;
+
+//     return (
+//       <div>
+//         <input
+//           type="text"
+//           value={filterText}
+//           placeholder="Search..."
+//           onChange={this.handleInputChange}
+//         />
+//         <br />
+//         <input
+//           type="checkbox"
+//           checked={inStockOnly}
+//           onChange={this.handleInStockChange}
+//         />{" "}
+//         Only show products in stock
+//       </div>
+//     );
+//   }
+// }
+
+class SearchBar extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { temperature: 0, scale: "c" };
-    this.handleCelsiusChange = this.handleCelsiusChange.bind(this);
-    this.handleFahrenheitChange = this.handleFahrenheitChange.bind(this);
-    this.handleKelvinChange = this.handleKelvinChange.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleOnStockChange = this.handleOnStockChange.bind(this);
   }
 
-  handleCelsiusChange(temperature) {
-    this.setState({ scale: "c", temperature });
+  handleInputChange(e) {
+    this.props.handleInputChange(e.target.value);
   }
 
-  handleFahrenheitChange(temperature) {
-    this.setState({ scale: "f", temperature });
-  }
-
-  handleKelvinChange(temperature) {
-    this.setState({ scale: "k", temperature });
+  handleOnStockChange(e) {
+    this.props.onInStockChange(e.target.checked);
   }
 
   render() {
-    const scale = this.state.scale;
-    console.log(scale);
-    const temperature = this.state.temperature;
-    const celsius =
-      scale === "f" || scale === "k"
-        ? tryConvert(temperature, toCelsius)
-        : temperature;
-    const fahrenheit =
-      scale === "c" || scale === "k"
-        ? tryConvert(temperature, toFahrenheit)
-        : temperature;
-    const kelvin =
-      scale === "c" || scale === "f"
-        ? tryConvert(temperature, toKelvin)
-        : temperature;
+    const filterText = this.props.filterText;
+    const stocked = this.props.inStockOnly;
     return (
       <div>
-        <TemperatureInput
-          scale="c"
-          temperature={celsius}
-          onTemperatureChange={this.handleCelsiusChange}
+        <input
+          type="text"
+          value={filterText}
+          onChange={this.handleInputChange}
         />
-        <TemperatureInput
-          scale="f"
-          temperature={fahrenheit}
-          onTemperatureChange={this.handleFahrenheitChange}
+        <br />
+        <input
+          type="checkbox"
+          value={stocked}
+          onChange={this.handleOnStockChange}
         />
-        <TemperatureInput
-          scale="k"
-          temperature={kelvin}
-          onTemperatureChange={this.handleKelvinChange}
-        />
-        <BoilingVerdict celsius={parseFloat(temperature)} />
+        Only show products in stock
       </div>
     );
   }
 }
 
-function App() {
-  return (
-    <div>
-      <Calculator />
-    </div>
-  );
+class FilterableProductTable extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { filterText: "", stocked: false };
+    this.handleInputText = this.handleInputText.bind(this);
+    this.handleOnStockChange = this.handleOnStockChange.bind(this);
+  }
+
+  handleInputText(filterText) {
+    this.setState({ filterText: filterText });
+  }
+
+  handleOnStockChange(stocked) {
+    this.setState({ stocked: stocked });
+  }
+
+  render() {
+    return (
+      <div>
+        <SearchBar
+          filterText={this.state.filterText}
+          inStockOnly={this.state.stocked}
+          handleInputChange={this.handleInputText}
+          onInStockChange={this.handleOnStockChange}
+        />
+        <ProductTable
+          products={products}
+          filterText={this.state.filterText}
+          inStockOnly={this.state.stocked}
+        />
+      </div>
+    );
+  }
 }
 
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(<FilterableProductTable />, document.getElementById("root"));
